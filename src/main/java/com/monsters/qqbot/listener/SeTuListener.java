@@ -69,15 +69,15 @@ public class SeTuListener {
             user1.setQq(QQ);
             userService.addUser(user1);
         } else {
-            if (user.getCount() > 100) {
+            if (user.getCount() > 1000) {
                 return sender.SENDER.sendGroupMsg(groupMsg, at + "今天的次数已经用完了，明天再来吧！daisuki");
             } else {
                 userService.userCountAdd(user);
             }
         }
 
-        int imageId;
-        imageId = random.nextInt(294) - 4;
+        int sum = imageMapper.selectCount(null);
+        int imageId = random.nextInt(sum) - 4;
         logger.info(String.valueOf(imageId));
         Image image = imageMapper.selectById(imageId);
         if (image == null) {
