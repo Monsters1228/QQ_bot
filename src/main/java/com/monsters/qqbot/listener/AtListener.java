@@ -34,7 +34,7 @@ public class AtListener {
 
     @OnGroup
     @Filter(atBot = true)
-    public Carrier<? extends Flag<GroupMsg.FlagContent>> atMyReturn(GroupMsg groupMsg, MsgSender sender) {
+    public Object atMyReturn(GroupMsg groupMsg, MsgSender sender) {
 
         if (groupMsg.getAccountInfo().getAccountCode().equals("2859456720") || groupMsg.getAccountInfo().getAccountCode().equals("1545029383")) {
             return sender.SENDER.sendGroupMsg(groupMsg, "主人，我在");

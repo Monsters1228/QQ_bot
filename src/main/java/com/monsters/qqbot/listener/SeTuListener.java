@@ -4,11 +4,13 @@ import catcode.CatCodeUtil;
 import catcode.CodeBuilder;
 import catcode.CodeTemplate;
 import com.monsters.qqbot.entity.Image;
+import com.monsters.qqbot.entity.Result;
 import com.monsters.qqbot.entity.User;
 import com.monsters.qqbot.mapper.ImageMapper;
 import com.monsters.qqbot.service.UserService;
 import love.forte.common.utils.Carrier;
 import love.forte.simbot.annotation.Filter;
+import love.forte.simbot.annotation.FilterValue;
 import love.forte.simbot.annotation.OnGroup;
 import love.forte.simbot.api.message.assists.Flag;
 import love.forte.simbot.api.message.containers.GroupAccountContainer;
@@ -18,13 +20,17 @@ import love.forte.simbot.filter.MatchType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
 import java.util.*;
 
 /**
  * setu监听
+ *
  * @author Monsters
  * @Data 2021-05-21
  */
@@ -48,6 +54,9 @@ public class SeTuListener {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     /**
      * setu发送
      *
@@ -57,13 +66,13 @@ public class SeTuListener {
      */
     @Async
     @OnGroup
-    @Filter(value = "涩图", matchType = MatchType.REGEX_FIND)
-    @Filter(value = "setu", matchType = MatchType.REGEX_FIND)
-    @Filter(value = "色图", matchType = MatchType.REGEX_FIND)
-    public Object sendSetu(GroupMsg groupMsg, MsgSender sender) {
+    @Filter(value = "setu {{tag,.+}}", matchType = MatchType.REGEX_MATCHES)
+    public Object sendSetu1(GroupMsg groupMsg, MsgSender sender,
+                            @FilterValue("tag") String tag) {
         String at = template.at(groupMsg.getAccountInfo().getAccountCode());
         String QQ = groupMsg.getAccountInfo().getAccountCode();
         User user = userService.getUser(QQ);
+
         if (user == null) {
             User user1 = new User();
             user1.setQq(QQ);
@@ -75,17 +84,47 @@ public class SeTuListener {
                 userService.userCountAdd(user);
             }
         }
-
-        int sum = imageMapper.selectCount(null);
-        int imageId = random.nextInt(sum) - 4;
-        logger.info(String.valueOf(imageId));
-        Image image = imageMapper.selectById(imageId);
-        if (image == null) {
-            return sender.SENDER.sendGroupMsg(groupMsg, at + "阿梓喵坏掉了");
+        String url = "https://api.lolicon.app/setu/v2?tag={tag}";
+        Map<String,Object> map  = new HashMap<>();
+        map.put("tag",tag);
+        Result response = restTemplate.getForObject(url,Result.class,map);
+        if(response.getData().length == 0){
+            return sender.SENDER.sendGroupMsg(groupMsg, at + "没有搜到 daisuki!");
         }
-        String url = image.getUrl();
-        String imageUrl = util.toCat("image", true, "url=" + url);
+        // String imageUrl = util.toCat("image", true, "url=" + url);
         logger.info("发送图片");
-        return sender.SENDER.sendGroupMsg(groupMsg, at + imageUrl);
+        String imageUrl = util.toCat("image", true, "url=" + response.getData()[0].getUrls().getOriginal());
+        return sender.SENDER.sendGroupMsg(groupMsg,
+                "pid: " + response.getData()[0].getPid() + "\n" + "title: " + response.getData()[0].getAuthor() + imageUrl);
+    }
+
+    /**
+     * @param groupMsg
+     * @param sender
+     * @return
+     */
+    @Async
+    @OnGroup
+    @Filter(value = "setu", matchType = MatchType.ENDS_WITH)
+    public Object sendSetu2(GroupMsg groupMsg, MsgSender sender) {
+        String url = "https://api.lolicon.app/setu/v2";
+        Result response = restTemplate.getForObject(url, Result.class);
+        String imageUrl = util.toCat("image", true, "url=" + response.getData()[0].getUrls().getOriginal());
+        return sender.SENDER.sendGroupMsg(groupMsg,
+                "pid: " + response.getData()[0].getPid() + "\n" + "title: " + response.getData()[0].getAuthor() + imageUrl);
+    }
+
+
+    @Async
+    @OnGroup
+    @Filter(value = "setu.", matchType = MatchType.STARTS_WITH)
+    public Object sendSetu3(GroupMsg groupMsg, MsgSender sender) {
+        String url = "https://api.lolicon.app/setu/v2?r18=1";
+        Result response = restTemplate.getForObject(url, Result.class);
+//        logger.info(response.getData()[0].getUrls().getOriginal());
+
+        String imageUrl = util.toCat("image", true, "url=" + response.getData()[0].getUrls().getOriginal());
+        return sender.SENDER.sendGroupMsg(groupMsg,
+                "pid: " + response.getData()[0].getPid() + "\n" + "title: " + response.getData()[0].getAuthor() + imageUrl);
     }
 }
