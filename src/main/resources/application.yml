@@ -1,5 +1,5 @@
 spring:
   profiles:
-    active: dev
+    active: pro
     #选择配置文件名 application-pro.yml
 

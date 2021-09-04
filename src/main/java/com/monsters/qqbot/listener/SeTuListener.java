@@ -127,4 +127,17 @@ public class SeTuListener {
         return sender.SENDER.sendGroupMsg(groupMsg,
                 "pid: " + response.getData()[0].getPid() + "\n" + "title: " + response.getData()[0].getAuthor() + imageUrl);
     }
+
+    /**
+     *
+     * @param groupMsg
+     * @param sender
+     */
+    @OnGroup
+    @Filter(value = "摩多摩多", matchType = MatchType.STARTS_WITH)
+    public void sendSeTuGroup(GroupMsg groupMsg, MsgSender sender){
+        for(int i =0;i < 10;i++){
+            sendSetu2(groupMsg,sender);
+        }
+    }
 }
