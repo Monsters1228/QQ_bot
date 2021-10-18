@@ -16,9 +16,12 @@ import love.forte.simbot.api.sender.MsgSender;
 import love.forte.simbot.filter.MatchType;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -148,7 +151,17 @@ public class HealthyClockInListener {
     public Object autoClock(GroupMsg groupMsg, MsgSender sender){
         String at = template.at(groupMsg.getAccountInfo().getAccountCode());
         String qqCode = groupMsg.getAccountInfo().getAccountCode();
-        return sender.SENDER.sendGroupMsg(groupMsg,at + "该功能暂未开放");
+        SystemUser user = userService.queryByQqCode(qqCode);
+        if (user == null) {
+            return sender.SENDER.sendGroupMsg(groupMsg, at + "请先绑定uaid");
+        }
+        SystemUserInfo userInfo = systemUserInfoService.queryByQqCode(qqCode);
+        if (userInfo == null) {
+            return sender.SENDER.sendGroupMsg(groupMsg, at + "请在以下网页填写个人信息" + "\n" + "http://121.5.110.15:8788/#/");
+        }
+        user.setAutoClockIn(1);
+        userService.updateItem(user);
+        return sender.SENDER.sendGroupMsg(groupMsg,at + "设置自动打卡成功");
     }
 
     /**
@@ -162,7 +175,10 @@ public class HealthyClockInListener {
     public Object cancelAutoClock(GroupMsg groupMsg, MsgSender sender){
         String at = template.at(groupMsg.getAccountInfo().getAccountCode());
         String qqCode = groupMsg.getAccountInfo().getAccountCode();
-        return sender.SENDER.sendGroupMsg(groupMsg,at + "该功能暂未开放");
+        SystemUser user = userService.queryByQqCode(qqCode);
+        user.setAutoClockIn(0);
+        userService.updateItem(user);
+        return sender.SENDER.sendGroupMsg(groupMsg,at + "取消自动打卡成功");
     }
 
     /**
@@ -177,5 +193,22 @@ public class HealthyClockInListener {
         String at = template.at(groupMsg.getAccountInfo().getAccountCode());
         String qqCode = groupMsg.getAccountInfo().getAccountCode();
         return sender.SENDER.sendGroupMsg(groupMsg,at + "该功能暂未开放");
+    }
+
+    /**
+     * 每天八点自动执行打卡
+     */
+    @Scheduled(cron = "0 0 8 * * *")
+    public void autoClockIn(){
+        List<SystemUser> userList = userService.queryAll();
+        for(SystemUser user : userList){
+            if(user.getAutoClockIn() == 1){
+                SystemUserInfo userInfo = systemUserInfoService.queryByQqCode(user.getQqCode());
+                ClockInResult result = HttpUtil.sendPost(userInfo, user.getUuid());
+                if(result.getErrorcode() == 0){
+                    logger.info(user.getQqCode() + "自动打卡成功");
+                }
+            }
+        }
     }
 }

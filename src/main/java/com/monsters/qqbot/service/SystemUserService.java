@@ -6,6 +6,8 @@ import com.monsters.qqbot.mapper.SystemUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author Monsters
  * @Data 2021/8/23.
@@ -42,7 +44,7 @@ public class SystemUserService {
     }
 
     /**
-     * 通过qq号查询是否绑定uuid
+     * 通过qq号查询
      * @param qqCode
      * @return
      */
@@ -50,5 +52,13 @@ public class SystemUserService {
         QueryWrapper<SystemUser> wrapper = new QueryWrapper<>();
         wrapper.eq("qq_code", qqCode);
         return systemUserMapper.selectOne(wrapper);
+    }
+
+    /**
+     * 获取所有的用户
+     * @return
+     */
+    public List<SystemUser> queryAll(){
+        return systemUserMapper.selectList(null);
     }
 }

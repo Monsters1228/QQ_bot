@@ -128,6 +128,7 @@ public class SeTuListener {
                 "pid: " + response.getData()[0].getPid() + "\n" + "title: " + response.getData()[0].getAuthor() + imageUrl);
     }
 
+
     /**
      *
      * @param groupMsg

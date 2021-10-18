@@ -33,24 +33,26 @@ public class HttpUtil {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
         map.add("uaid", uuid);
         map.add("mobile", userInfo.getMobile());
-        map.add("provinceJg",userInfo.getProvinceJg());
-        map.add("cityJg", userInfo.getCityJg());
+        map.add("linkman",userInfo.getLinkman());
+        map.add("linkmanmobile",userInfo.getLinkmanmobile());
         map.add("provinceHome", userInfo.getProvinceHome());
         map.add("cityHome", userInfo.getCityHome());
         map.add("addressHome", userInfo.getAddressHome());
+        map.add("province2", userInfo.getProvince2());
+        map.add("city2",userInfo.getCity2());
+        map.add("address2",userInfo.getAddress2());;
         map.add("province", userInfo.getProvince());
         map.add("city",userInfo.getCity());
         map.add("address",userInfo.getAddress());;
-        map.add("touchZhongGaoFlag", "没有");
-        map.add("huBeiManFlag2", "否");
-        map.add("sheQuTouchFlag", "否");
-        map.add("jinWaiTouchFlag", "否");
-        map.add("huCheckFlag", "是");
-        map.add("health", "正常");
-        map.add("memberHealth", "正常");
-        map.add("suikangCode", "绿码");
-        map.add("yimiao", "已接种两剂");
-        map.add("infxarea", "否");
+
+        map.add("health", userInfo.getHealth());
+        map.add("memberHealth", userInfo.getMemberHealth());
+        map.add("suikangCode", userInfo.getSuikangCode());
+        map.add("yimiao", userInfo.getYimiao());
+        map.add("todaytrave", userInfo.getTodaytrave());
+        map.add("zuoritrave", userInfo.getZuoritrave());
+        map.add("touchZhongGaoFlag", userInfo.getTouchZhongGaoFlag());
+        map.add("infxarea", userInfo.getInfxarea());
         RestTemplate restTemplate = new RestTemplate();
 
         ClockInResult result = restTemplate.postForObject( healthySystemUrl, request, ClockInResult.class);

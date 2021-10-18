@@ -25,4 +25,6 @@ public class SystemUser {
     // 打卡系统 uuid
     String uuid;
 
+    // 是否自动打卡
+    Integer autoClockIn;
 }

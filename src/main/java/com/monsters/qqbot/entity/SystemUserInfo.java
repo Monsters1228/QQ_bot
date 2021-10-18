@@ -25,11 +25,11 @@ public class SystemUserInfo {
     // 手机号
     String mobile;
 
-    // 籍贯（省）
-    String provinceJg;
+    // 紧急联系人姓名
+    String linkman;
 
-    // 籍贯 （市）
-    String cityJg;
+    // 紧急联系人电话
+    String linkmanmobile;
 
     // 家乡所在地（省）
     String provinceHome;
@@ -40,6 +40,15 @@ public class SystemUserInfo {
     // 家乡所在地（详细地址）
     String addressHome;
 
+    // 常住地址（省）
+    String province2;
+
+    // 常住地址（市）
+    String city2;
+
+    // 常住地址（详细地址）
+    String address2;
+
     // 当前所在地（省）
     String province;
 
@@ -49,20 +58,6 @@ public class SystemUserInfo {
     // 当前所在地（详细地址）
     String address;
 
-    @TableField(exist = false)
-    String touchZhongGaoFlag = "没有";
-
-    @TableField(exist = false)
-    String huBeiManFlag2 = "否";
-
-    @TableField(exist = false)
-    String sheQuTouchFlag = "否";
-
-    @TableField(exist = false)
-    String jinWaiTouchFlag = "否";
-
-    @TableField(exist = false)
-    String huCheckFlag = "是";
 
     @TableField(exist = false)
     String health = "正常";
@@ -74,7 +69,16 @@ public class SystemUserInfo {
     String suikangCode = "绿码";
 
     @TableField(exist = false)
-    String yimiao = "已接种两剂";
+    String yimiao = "已完成全程接种";
+
+    @TableField(exist = false)
+    String todaytrave = "只在中山市";
+
+    @TableField(exist = false)
+    String zuoritrave = "只在中山市";
+
+    @TableField(exist = false)
+    String touchZhongGaoFlag = "没有";
 
     @TableField(exist = false)
     String infxarea = "否";
