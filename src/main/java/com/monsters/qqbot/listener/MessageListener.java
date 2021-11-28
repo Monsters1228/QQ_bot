@@ -47,7 +47,8 @@ public class MessageListener {
         if (atDetection.atBot() == true) {
             return;
         }
-        sender.SENDER.sendGroupMsg(groupMsg, "ohayou");
+        String imageUrl = util.toCat("image", true, "url=" + "https://pixiv.cat/82775556.jpg");
+        sender.SENDER.sendGroupMsg(groupMsg, imageUrl);
         logger.info("监听消息");
     }
 

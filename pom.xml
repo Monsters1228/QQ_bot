@@ -15,7 +15,7 @@
     <description>Demo project for Spring Boot</description>
     <properties>
         <java.version>1.8</java.version>
-        <simbot.version>2.0.3</simbot.version>
+        <simbot.version>2.2.3</simbot.version>
     </properties>
 
     <dependencies>
