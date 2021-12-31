@@ -16,7 +16,7 @@
 	<description>qqbot</description>
 	<properties>
 		<java.version>11</java.version>
-		<simbot.version>2.2.3</simbot.version>
+		<simbot.version>2.3.4</simbot.version>
 	</properties>
 	<modules>
 		<module>bot-core</module>

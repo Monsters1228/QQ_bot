@@ -33,6 +33,10 @@ import java.util.Random;
  */
 @Component
 public class SeTuListener {
+
+    // 不可以色色
+    boolean canBeColored = true;
+
     final Logger logger = LoggerFactory.getLogger(getClass());
 
     //工具类
@@ -60,6 +64,9 @@ public class SeTuListener {
     @Filter(value = "setu {{tag,.+}}", matchType = MatchType.REGEX_MATCHES)
     public Object sendSetu1(GroupMsg groupMsg, MsgSender sender, @FilterValue("tag") String tag) {
         String at = template.at(groupMsg.getAccountInfo().getAccountCode());
+        if(canBeColored == false)
+            return  sender.SENDER.sendGroupMsg(groupMsg, at + "不可以色色");
+
         String api = "https://api.lolicon.app/setu/v2?tag={tag}";
         Map<String,Object> map  = new HashMap<>();
         map.put("tag",tag);
@@ -96,12 +103,15 @@ public class SeTuListener {
     @Filter(value = "setu", matchType = MatchType.ENDS_WITH)
     public Object sendSetu2(GroupMsg groupMsg, MsgSender sender) {
         String at = template.at(groupMsg.getAccountInfo().getAccountCode());
-        String api = "https://api.lolicon.app/setu/v2";
-        Result response = new Result();
+        if(canBeColored == false)
+            return  sender.SENDER.sendGroupMsg(groupMsg, at + "不可以色色");
+
+            String api = "https://api.lolicon.app/setu/v2";
+            Result response = new Result();
         try{
             response = restTemplate.getForObject(api, Result.class);
         }catch (ResourceAccessException exception){
-            return  sender.SENDER.sendGroupMsg(groupMsg, at + "请求超时，请重试");
+            return sender.SENDER.sendGroupMsg(groupMsg, at + "请求超时，请重试");
         }
         String pid = response.getData()[0].getPid();
         String url = "https://pixiv.re/" + pid +".jpg";
@@ -142,5 +152,26 @@ public class SeTuListener {
         for(int i =0;i < 10;i++){
             sendSetu2(groupMsg,sender);
         }
+    }
+
+    @OnGroup
+    @Filter(value = "可以色色", matchType = MatchType.STARTS_WITH)
+    public Object canBeColored(GroupMsg groupMsg, MsgSender sender){
+        String at = template.at(groupMsg.getAccountInfo().getAccountCode());
+        if (groupMsg.getAccountInfo().getAccountCode().equals("2859456720")){
+            this.canBeColored = true;
+        }
+        return sender.SENDER.sendGroupMsg(groupMsg, at + "好的主人，可以色色");
+    }
+
+
+    @OnGroup
+    @Filter(value = "不可以色色", matchType = MatchType.STARTS_WITH)
+    public Object notColor(GroupMsg groupMsg, MsgSender sender){
+        String at = template.at(groupMsg.getAccountInfo().getAccountCode());
+        if (groupMsg.getAccountInfo().getAccountCode().equals("2859456720")){
+            this.canBeColored = false;
+        }
+        return sender.SENDER.sendGroupMsg(groupMsg, at + "好的主人，不可以色色");
     }
 }
